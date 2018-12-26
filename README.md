@@ -26,7 +26,9 @@ http://localhost:8080/rest/chats
 http://localhost:8080/rest/msg/client/receive
 8) Get new agent messages
 http://localhost:8080/rest/msg/agent/receive
-Post methods:
+
+Rest Post methods:
+
 1) Register an client PathParam("name"), Consumes("application/x-www-form-urlencoded")
 http://localhost:8080/rest/reg/client
 2) Send a message to the agent from the client FormParam("message") ,Consumes("application/x-www-form-urlencoded")
