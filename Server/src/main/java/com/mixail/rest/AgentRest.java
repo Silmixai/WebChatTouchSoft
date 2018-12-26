@@ -38,5 +38,4 @@ public class AgentRest {
         return agentService.getReadyAgents(page, count);
     }
 
-
 }
