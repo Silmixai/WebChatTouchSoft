@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AgentPage</title>
+    <script src="jquery-1.10.2.min.js"></script>
+    <link rel="stylesheet" href="css/agent.css">
+
+
+</head>
+<body>
+
+<ul class="tabs" id="tabs">
+    <input id="ExitButton" hidden="hidden" type="button" value="EXIT" height="50px" onclick="CloseAgent();">
+</ul>
+<div class="tab_container" id="tab_container">
+</div>
+<br>
+<br>
+<br>
+
+<ul id="Info"></ul>
+
+<div class="tab_content">
+    <label id="label-Max clients number">Max clients number
+        <input type="number" value="1" min="1" max="10" id="maximum-number-of-clients" class="form-control">
+    </label>
+
+    <label id="labelRole" hidden="hidden">Choose your role</label>
+    <select id="userRole" class="web-client-role-selector" hidden="hidden">
+        <option>agent</option>
+    </select>
+    <br>
+    <br>
+    <label id="labelName">Enter your name </label>
+    <input type="text" id="userName" class="web-client-username-input"/>
+    <input id="RegisterButton" class="web-client-prompt-submit" type="button" value="Register" onclick="register();">
+    <br>
+    <br>
+</div>
+</body>
+
+
+<script>
+
+    $(document).ready(function () {
+        //Действия по умолчанию
+        $(".tab_content").hide(); //скрыть весь контент
+        $("ul.tabs li:first").addClass("active").show(); //Активировать первую вкладку
+        $(".tab_content:first").show(); //Показать контент первой вкладки
+
+        //Событие по клику
+        clickTab();
+    });
+
+    function clickTab() {
+        $("ul.tabs li").click(function f() {
+            $("ul.tabs li").removeClass("active"); //Удалить "active" класс
+            $(this).addClass("active"); //Добавить "active" для выбранной вкладки
+            $(".tab_content").hide(); //Скрыть контент вкладки
+            var activeTab = $(this).find("a").attr("href"); //Найти значение атрибута, чтобы определить активный таб + контент
+            $(activeTab).fadeIn(); //Исчезновение активного контента
+            return false;
+        });
+    }
+
+
+    function CloseAgent() {
+        webSocket.send(JSON.stringify({
+            'message': 'exitAgent',
+            'TypeOfMessage': '/exit'
+        }));
+        document.getElementById("ExitButton").hidden = true;
+        var tabs = document.getElementById("tabs");
+        tabs.hidden = true;
+        $(".tab_content").hide();
+        addMessage("agent exit from the chat,all tabs was closed");
+    }
+
+    function addMessage(message) {
+        var infoArea = document.getElementById('Info');
+        var li = document.createElement('li');
+        var t = document.createTextNode(message);
+        li.appendChild(t)
+        infoArea.appendChild(li);
+    }
+
+
+    webSocket = new WebSocket('ws://localhost:8080/agent');
+    var userRole = document.getElementById("userRole");
+    var label_Max_clients = document.getElementById("label-Max clients number");
+    var userName = document.getElementById("userName");
+    var registerButton = document.getElementById("RegisterButton");
+    var maximum_number_of_clients = document.getElementById("maximum-number-of-clients");
+    var exitButton = document.getElementById("ExitButton");
+
+    function register() {
+
+        labelName.hidden = true;
+        userRole.hidden = true;
+        registerButton.hidden = true;
+        userName.hidden = true;
+        maximum_number_of_clients.hidden = true;
+        label_Max_clients.hidden = true;
+        exitButton.hidden = false;
+        webSocket.send(JSON.stringify({
+            'message': userRole.value + ' ' + userName.value + ' ',
+            'TypeOfMessage': '/register',
+            'maxCountActiveChat': maximum_number_of_clients.value,
+            'TypeofAgent':'web'
+        }));
+    }
+
+
+    webSocket.onmessage = function proccesMessage(message) {
+
+        var jsonData = JSON.parse(message.data);
+
+        var id = jsonData.id;
+        var clientName = jsonData.clientName;
+
+        if (jsonData.TypeOfMessage == "Register") {
+
+            addMessage('Info:' + 'Agent ' + jsonData.agentName + ' is registered');
+           // addMessage('Info: Please wait for the connected client prior to start the dialog. There are no connected clients now.')
+        }
+
+        if (jsonData.TypeOfMessage == "find") {
+
+            addTab(id, clientName);
+            addMessage('Info:' + 'Client ' + clientName + ' connected');
+        }
+
+        if (jsonData.TypeOfMessage == "Chatting") {
+            var messageText = document.getElementById('textarea' + ' ' + id + ' ' + clientName);
+            messageText.value += jsonData.clientName + ':' + jsonData.message + "\n";
+        }
+
+        if (jsonData.TypeOfMessage == "Chatting Agent") {
+
+            var messageText = document.getElementById('textarea' + ' ' + id + ' ' + clientName);
+            messageText.value += jsonData.agentName + ':' + jsonData.message + "\n";
+
+        }
+
+        if (jsonData.TypeOfMessage == "ExitClient") {
+            var rootContainer = document.getElementById("tab_container");
+            var tabs = document.getElementById("tabs");
+            rootContainer.removeChild(document.getElementById('tab' + id));
+            tabs.removeChild(document.getElementById('li' + id));
+
+            addMessage('Info:Client ' + clientName + ' exit from the chat, tab was closed')
+
+        }
+
+        if (jsonData.TypeOfMessage == "ClientLeft") {
+            var rootContainer = document.getElementById("tab_container");
+            var tabs = document.getElementById("tabs");
+            rootContainer.removeChild(document.getElementById('tab' + id));
+            tabs.removeChild(document.getElementById('li' + id));
+            addMessage('Info:Client ' + clientName + ' left the chat, tab was closed');
+        }
+
+
+        function addTab(id, clientName) {
+
+            var tabs = document.getElementById("tabs");
+            var li = document.createElement('li');
+            li.id = 'li' + id;
+            li.classList.add("active");
+            var a = document.createElement('a');
+            a.href = "#tab" + id;
+            var t = document.createTextNode(clientName);
+            a.appendChild(t);
+            li.appendChild(a);
+            tabs.appendChild(li);
+            var rootContainer = document.getElementById("tab_container");
+
+            var br1 = document.createElement("br");
+            var br2 = document.createElement("br");
+            var br3 = document.createElement("br");
+
+            var container = document.createElement("div");
+            container.id = 'tab' + id;
+            container.appendChild(br3);
+            var buttonClose = document.createElement("input");
+            buttonClose.value = "Close tab";
+            buttonClose.type = "button";
+            buttonClose.id = 'buttonClose' + ' ' + id + ' ' + clientName;
+            container.appendChild(buttonClose);
+
+            buttonClose.addEventListener('click', function () {
+                webSocket.send(JSON.stringify({
+                    'id': id.toString(),
+                    'clientName': clientName,
+                    'message': 'closeConnection',
+                    'TypeOfMessage': '/closeTab'
+                }));
+
+                rootContainer.removeChild(document.getElementById('tab' + id));
+                tabs.removeChild(document.getElementById('li' + id));
+            });
+            container.appendChild(br1);
+            var textArea = document.createElement("textarea");
+            textArea.readOnly = true;
+            textArea.rows = 10;
+            textArea.cols = 45;
+            textArea.classList.add("messages-area");
+            textArea.id = 'textarea' + ' ' + id + ' ' + clientName;
+            container.appendChild(textArea);
+            container.appendChild(br2);
+
+            var input = document.createElement("input");
+            input.type = "text";
+            input.size = 50;
+            input.id = "input " + id;
+            input.classList.add('message-input-box');
+
+            container.appendChild(input);
+
+
+            var inputSend = document.createElement("input");
+            inputSend.type = "button";
+            inputSend.value = "send";
+            inputSend.id = 'send' + ' ' + id + ' ' + clientName;
+            container.appendChild(inputSend);
+            inputSend.addEventListener('click', function () {
+                webSocket.send(JSON.stringify({
+                    'id': id.toString(),
+                    'clientName': clientName,
+                    'message': input.value,
+                    'TypeOfMessage': 'new chatting'
+                }));
+                input.value = " ";
+            });
+            container.classList.add('tab_content');
+            container.style.display = 'none';
+            rootContainer.appendChild(container);
+            clickTab();
+        }
+    }
+
+</script>
+</html>

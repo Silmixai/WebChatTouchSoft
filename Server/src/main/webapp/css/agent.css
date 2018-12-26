@@ -1,0 +1,93 @@
+ul.tabs {
+    margin: 0;
+    padding: 0;
+    float: left;
+    list-style: none;
+    height: 32px;
+    border-bottom: 1px solid #999;
+    border-left: 1px solid #999;
+    width: 100%;
+}
+
+ul.tabs li {
+    float: left;
+    padding: 0;
+    height: 31px;
+    line-height: 31px;
+
+    border-left: none;
+    margin-bottom: -1px;
+    background: #e0e0e0;
+    overflow: hidden;
+    position: relative;
+}
+
+ul.tabs li a {
+    text-decoration: none;
+    color: #000;
+    display: block;
+    font-size: 1.2em;
+    padding: 0 20px;
+    outline: none;
+}
+
+ul.tabs li a:hover {
+    background: #ccc;
+}
+
+html ul.tabs li.active, html ul.tabs li.active a:hover {
+    background: #fff;
+    border-bottom: 1px solid #fff;
+}
+
+.message-input-box {
+    width: 220px;
+    padding: 2px;
+    font: inherit;
+    outline: none;
+    border: black 1px solid;
+    margin-left: 20px;
+}
+
+
+.web-agent-prompt-submit {
+    width: 200px;
+    height: 30px;
+    border: black 2px solid;
+    font: inherit;
+    outline: none;
+    background: white;
+}
+
+
+.messages-area {
+    width: 500px;
+    height: 200px;
+    margin: 20px;
+    padding: 5px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    outline: none;
+    background: white;
+    resize: none;
+    font: inherit;
+}
+
+
+.tab_container {
+    border: 1px solid #999;
+    border-top: none;
+    clear: both;
+    float: left;
+    width: 100%;
+    background: #fff;
+    -moz-border-radius-bottomright: 5px;
+    -webkit-border-bottom-right-radius: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+}
+
+.tab_content {
+    padding: 20px;
+    font-size: 1.2em;
+}
