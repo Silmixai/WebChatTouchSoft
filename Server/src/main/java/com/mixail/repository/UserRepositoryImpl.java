@@ -10,6 +10,13 @@ public class UserRepositoryImpl implements UserRepository {
     private static ConcurrentHashMap<Integer, User> clients = new ConcurrentHashMap<>();
     private static ConcurrentHashMap<Integer, User> agents = new ConcurrentHashMap<>();
 
+    static {
+        User user = new User();
+        user.setName("mike");
+        user.setPassword("1111");
+        user.setMaxCountActiveChat(2);
+    }
+
     @Override
     public void addClient(User user) {
         clients.put(user.getId(), user);

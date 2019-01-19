@@ -12,13 +12,11 @@ import static org.mockito.Mockito.when;
 class ConsoleHelperTest {
 
     private String HELLO = "Hello";
-    private  BufferedReader reader;
-
+    private BufferedReader reader;
 
 
     @Test
     void writeMessage() {
-
 
 
     }
@@ -26,9 +24,9 @@ class ConsoleHelperTest {
     @Test
     void readString() {
         try {
-            reader=mock(BufferedReader.class);
+            reader = mock(BufferedReader.class);
             when(reader.readLine()).thenReturn("Hello");
-            assertEquals(HELLO,reader.readLine());
+            assertEquals(HELLO, reader.readLine());
         } catch (IOException e) {
             e.printStackTrace();
         }

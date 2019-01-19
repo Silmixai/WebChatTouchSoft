@@ -30,6 +30,9 @@ public class UserService {
     public static final ConcurrentLinkedQueue<User> clientsQueue = new ConcurrentLinkedQueue<>();
     private static volatile UserService instance;
 
+    public static void setRepository(UserRepositoryImpl repository) {
+        UserService.repository = repository;
+    }
 
     public static UserService getInstance() {
         UserService localInstance = instance;

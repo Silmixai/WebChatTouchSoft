@@ -11,6 +11,7 @@ public class User {
 
     private Integer id;
     private String name;
+    private String password;
     private static AtomicInteger isGenId = new AtomicInteger();
     private Session userSession;
     private TypeOfUser typeOfUser;
@@ -27,6 +28,15 @@ public class User {
 
     private boolean isRestUser;
     private HttpSession RestSession;
+
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public HttpSession getRestSession() {
         return RestSession;
