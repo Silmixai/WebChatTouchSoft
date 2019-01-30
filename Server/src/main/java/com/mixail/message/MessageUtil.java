@@ -13,7 +13,6 @@ import java.util.Map;
 
 public class MessageUtil {
 
-
     private final Object writeLock = new Object();
 
     public static String buildJsonData(String username, String message) {
@@ -67,6 +66,16 @@ public class MessageUtil {
     public String createJsonMessageToAgent(User agent, User client, String TypeOfMessage, String message) {
 
         JsonObject jsonObject = Json.createObjectBuilder().add("id", client.getId()).add("clientName", client.getName()).add("TypeOfMessage", TypeOfMessage).add("message", message).add("agentName", agent.getName()).build();
+        StringWriter stringWriter = new StringWriter();
+        try (JsonWriter jsonWriter = Json.createWriter(stringWriter)) {
+            jsonWriter.write(jsonObject);
+        }
+        return stringWriter.toString();
+    }
+
+    public String createJsonTypeOfMessageString(String TypeOfMessage) {
+
+        JsonObject jsonObject = Json.createObjectBuilder().add("TypeOfMessage", TypeOfMessage).build();
         StringWriter stringWriter = new StringWriter();
         try (JsonWriter jsonWriter = Json.createWriter(stringWriter)) {
             jsonWriter.write(jsonObject);

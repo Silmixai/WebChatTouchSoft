@@ -34,15 +34,15 @@ public class AgentEndpoint {
 
 
     public void sendMessage(String message) {
-            try {
-                if (isConnectedClient) {
-                    session.getBasicRemote().sendText(message);
-                }
-                else
-                    ConsoleHelper.writeMessage("Please wait for the connected client prior to start the dialog. There are no connected clients now.");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            if (isConnectedClient) {
+                session.getBasicRemote().sendText(message);
+            } else
+                if (Agent.isCorrectSignIn)
+                ConsoleHelper.writeMessage("Please wait for the connected client prior to start the dialog. There are no connected clients now.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @OnMessage
@@ -60,6 +60,29 @@ public class AgentEndpoint {
                 System.out.println(clientName + ":" + clientMessage);
                 break;
             }
+
+
+            case "IncorrectName": {
+                System.out.println("Wrong data, user with this name is not registered, please input '/sign in agent your_name' again!!");
+                Agent.isRegisteredAgent = false;
+                break;
+            }
+
+            case "IncorrectPassword":
+            {
+                System.out.println("Wrong password, please input '/sign in agent your_name' again!!!");
+                Agent.isRegisteredAgent = false;
+                break;
+            }
+
+            case "CorrectPassword":
+            {
+                Agent.isRegisteredAgent = true;
+                Agent.isCorrectSignIn=true;
+                System.out.println("Info: correct input");
+                break;
+            }
+
             case "Chatting Agent": {
                 String clientMessage = Json.createReader(new StringReader(message)).readObject().getString("message");
                 String agentName = Json.createReader(new StringReader(message)).readObject().getString("agentName");

@@ -1,5 +1,6 @@
 package com.mixail.repository;
 
+import com.mixail.model.AgentEntity;
 import com.mixail.model.User;
 
 import java.util.Collection;
@@ -12,5 +13,6 @@ public interface UserRepository {
      void removeAgent(User person);
      Collection<User> getAgents();
      Collection<User> getClients();
+     Collection<AgentEntity> getRegisterAgents();
 
 }

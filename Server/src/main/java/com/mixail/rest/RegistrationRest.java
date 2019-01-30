@@ -1,6 +1,8 @@
 package com.mixail.rest;
 
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonWriter;
@@ -16,13 +18,14 @@ import javax.ws.rs.core.Context;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.util.Base64;
 
-import static com.mixail.Agent.createJsonRegisterAgentMessage;
 import static com.mixail.Client.createJsonRegisterMessage;
 
 @Path("/reg")
 public class RegistrationRest {
     @Path("/client")
+    @Tag(name = "Register an client")
     @POST
     @Consumes("application/x-www-form-urlencoded")
     public String registerClient(
@@ -55,14 +58,14 @@ public class RegistrationRest {
     }
 
 
-
-
     @Path("/agent")
+    @Tag(name = "Register an agent")
     @POST
     @Consumes("application/x-www-form-urlencoded")
     public String registerAgent(
             @FormParam("name") String name,
-            @FormParam("count") String activeChats,
+            @FormParam("password") String password,
+            @FormParam("activeChats") String activeChats,
             @Context HttpServletRequest request,
             @Context HttpServletResponse response
     ) {
@@ -72,7 +75,7 @@ public class RegistrationRest {
                 session.setMaxInactiveInterval(120);
                 RestAgentEndpoint restAgentEndpoint= new RestAgentEndpoint();
                 session.setAttribute("restAgentEndpoint", restAgentEndpoint);
-                restAgentEndpoint.sendMessage(createJsonRegisterAgentMessage(name, "agent", "/register",activeChats));
+                restAgentEndpoint.sendMessage(createJsonRegisterAgentMessage(password,name,activeChats));
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -95,5 +98,19 @@ public class RegistrationRest {
         }
         return  stringWriter.toString();
     }
+
+    private String createJsonRegisterAgentMessage(String agentPassword,String userName,String activeChats) {
+
+        Base64.Encoder encoder = Base64.getEncoder();
+        String encodedString = encoder.encodeToString(agentPassword.getBytes());
+        JsonObject jsonObject = Json.createObjectBuilder().add("agentPassword", encodedString).add("TypeOfMessage", "/register").add("TypeofAgent", "web").add("message","agent "+ userName).add("maxCountActiveChat",activeChats).build();
+        StringWriter stringWriter = new StringWriter();
+        try (JsonWriter jsonWriter = Json.createWriter(stringWriter)) {
+            jsonWriter.write(jsonObject);
+        }
+        return stringWriter.toString();
+    }
+
+
 
 }

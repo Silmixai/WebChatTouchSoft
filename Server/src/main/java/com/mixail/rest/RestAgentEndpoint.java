@@ -47,6 +47,4 @@ public class RestAgentEndpoint {
         session.getBasicRemote().sendText(message);
     }
 
-
-
 }

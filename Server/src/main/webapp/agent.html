@@ -9,53 +9,103 @@
 </head>
 <body>
 
+
+
+<div class="checkRegister" id="checkRegister">
+</div>
+
 <ul class="tabs" id="tabs">
     <input id="ExitButton" hidden="hidden" type="button" value="EXIT" height="50px" onclick="CloseAgent();">
 </ul>
 <div class="tab_container" id="tab_container">
 </div>
+
+<div class="tab" id="registerTab">
+    <button class="tablinks" onclick="openCity(event, 'Register')">Register</button>
+    <button class="tablinks" onclick="openCity(event, 'SignIn')">Sign In</button>
+</div>
+
+
 <br>
 <br>
 <br>
 
 <ul id="Info"></ul>
 
-<div class="tab_content">
-    <div class="row">
-        <div class="col-md-6 mx-auto">
 
-    <label id="label-Max clients number">Max clients number
-        <input type="number" value="1" min="1" max="10" id="maximum-number-of-clients" class="form-control" >
-    </label>
+<div id="Register" class="tabcontent">
+    <div class="tab_content">
+        <div class="row">
+            <div class="col-md-6 mx-auto">
 
-
-    <label id="labelRole" hidden="hidden">Choose your role</label>
-    <select id="userRole" class="web-client-role-selector" hidden="hidden">
-        <option>agent</option>
-    </select>
+                <label id="label-Max clients number">Max clients number
+                    <input type="number" value="1" min="1" max="10" id="maximum-number-of-clients" class="form-control">
+                </label>
 
 
-    <div class="form-group">
-            <label id="labelName">Enter your name </label>
-            <input type="text"  class="form-control form-control-lg rounded-0"   id="userName" />
-            <div>
+                <label id="labelRole" hidden="hidden">Choose your role</label>
+                <select id="userRole" class="web-client-role-selector" hidden="hidden">
+                    <option>agent</option>
+                </select>
 
-            <div class="form-group">
-                <label id="agentPassword">Enter Password</label>
-                <input type="password"  required="" autocomplete="new-password" class="form-control form-control-lg rounded-0" id="userPassword" />
 
-                <div>
-                    <div class="form-group">
-                    <input id="RegisterButton" class="button" type="button" value="Register" onclick="register();">
+                <div class="form-group">
+                    <label id="labelName">Enter your name </label>
+                    <input type="text" class="form-control form-control-lg rounded-0" id="userName"/>
+                    <div>
+
+                        <div class="form-group">
+                            <label id="passwordLabel">Enter Password</label>
+                            <input type="password" class="form-control form-control-lg rounded-0" id="agentPassword"/>
+
+                            <div>
+                                <div class="form-group">
+                                    <input id="RegisterButton" class="button" type="button" value="Register"
+                                           onclick="register();">
+                                </div>
+                                <br>
+                            </div>
+                        </div>
                     </div>
-                    <br>
                 </div>
             </div>
         </div>
     </div>
 </div>
-   </div>
+
+
+<div id="SignIn" class="tabcontent">
+
+    <div class="tab_content2">
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <div class="form-group">
+                    <label id="labelNameSignIn">Enter your name </label>
+                    <input type="text" class="form-control form-control-lg rounded-0" id="userNameSignIn"/>
+                    <div>
+                        <div class="form-group">
+                            <label id="passwordLabelSignIn">Enter Password</label>
+                            <input id="passwordSignIn" type="password" class="form-control form-control-lg rounded-0"
+                                   id="agentPasswordSignIn"/>
+
+                            <br>
+                            <div>
+                                <div class="form-group">
+                                    <input id="signInButton" class="button" type="button" value="Sign In"
+                                           onclick="signIn();">
+                                </div>
+                                <br>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+
 </body>
 
 
@@ -111,6 +161,15 @@
     var registerButton = document.getElementById("RegisterButton");
     var maximum_number_of_clients = document.getElementById("maximum-number-of-clients");
     var exitButton = document.getElementById("ExitButton");
+    var agentPassword = document.getElementById("agentPassword");
+    var passwordLabel = document.getElementById("passwordLabel");
+    var registerTab = document.getElementById("registerTab");
+    var checkRegister = document.getElementById("checkRegister");
+    var userNameSignIn = document.getElementById("userNameSignIn");
+    var passwordSignIn = document.getElementById("passwordSignIn");
+    var passwordLabelSignIn = document.getElementById("passwordLabelSignIn");
+    var labelNameSignIn = document.getElementById("labelNameSignIn");
+    var signInButton=document.getElementById("signInButton");
 
     function register() {
 
@@ -119,14 +178,36 @@
         registerButton.hidden = true;
         userName.hidden = true;
         maximum_number_of_clients.hidden = true;
+        agentPassword.hidden = true;
+        passwordLabel.hidden = true;
         label_Max_clients.hidden = true;
         exitButton.hidden = false;
+        registerTab.hidden = true;
+
+        //alert(agentPassword);
+        var encodedString = btoa(agentPassword.value);
         webSocket.send(JSON.stringify({
+            'agentPassword': encodedString,
             'message': userRole.value + ' ' + userName.value + ' ',
             'TypeOfMessage': '/register',
             'maxCountActiveChat': maximum_number_of_clients.value,
             'TypeofAgent': 'web'
         }));
+
+    }
+
+    function signIn() {
+
+        var encodedStringSignIn = btoa(passwordSignIn.value);
+
+        webSocket.send(JSON.stringify({
+            'agentPassword': encodedStringSignIn,
+            'name': userNameSignIn.value,
+            'TypeOfMessage': '/signIn',
+            'TypeofAgent': 'web'
+        }));
+
+
     }
 
 
@@ -147,6 +228,46 @@
 
             addTab(id, clientName);
             addMessage('Info:' + 'Client ' + clientName + ' connected');
+        }
+
+
+        if (jsonData.TypeOfMessage == "IncorrectName") {
+
+            checkRegister.textContent = 'Wrong data, user with this name is not registered, try again!!';
+            checkRegister.style.color = 'red';
+
+        }
+
+
+        if (jsonData.TypeOfMessage == "correctName") {
+
+            checkRegister.textContent = 'correctName';
+            checkRegister.style.color = 'red';
+
+        }
+
+        if (jsonData.TypeOfMessage == "IncorrectPassword") {
+
+            checkRegister.textContent = 'Wrong password, try again!';
+            checkRegister.style.color = 'red';
+
+        }
+
+
+        if (jsonData.TypeOfMessage == "CorrectPassword") {
+
+            labelNameSignIn.hidden = true;
+            userRole.hidden = true;
+            signInButton.hidden = true;
+            userNameSignIn.hidden = true;
+            maximum_number_of_clients.hidden = true;
+            passwordSignIn.hidden = true;
+            passwordLabelSignIn.hidden = true;
+            exitButton.hidden = false;
+            registerTab.hidden = true;
+            addMessage('Info: correct input');
+            checkRegister.hidden=true;
+
         }
 
         if (jsonData.TypeOfMessage == "Chatting") {
@@ -221,9 +342,8 @@
             container.appendChild(br1);
             var textArea = document.createElement("textarea");
             textArea.readOnly = true;
-            textArea.rows = 10;
-            textArea.cols = 45;
-            textArea.classList.add("messages-area");
+            textArea.rows = 20;
+            textArea.classList.add("form-control");
             textArea.id = 'textarea' + ' ' + id + ' ' + clientName;
             container.appendChild(textArea);
             container.appendChild(br2);
@@ -233,10 +353,7 @@
             input.size = 50;
             input.id = "input " + id;
             input.classList.add('message-input-box');
-
             container.appendChild(input);
-
-
             var inputSend = document.createElement("input");
             inputSend.type = "button";
             inputSend.value = "send";
@@ -257,6 +374,29 @@
             clickTab();
         }
     }
+
+
+    function openCity(evt, cityName) {
+        // Declare all variables
+        var i, tabcontent, tablinks;
+
+        // Get all elements with class="tabcontent" and hide them
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
+        // Get all elements with class="tablinks" and remove the class "active"
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        // Show the current tab, and add an "active" class to the button that opened the tab
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
 
 </script>
 </html>

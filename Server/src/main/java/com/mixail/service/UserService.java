@@ -2,6 +2,7 @@ package com.mixail.service;
 
 
 import com.mixail.message.MessageUtil;
+import com.mixail.model.AgentEntity;
 import com.mixail.model.Status;
 import com.mixail.model.TypeOfUser;
 import com.mixail.model.User;
@@ -15,6 +16,7 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -110,6 +112,11 @@ public class UserService {
         user.setName(name);
         user.setTypeOfUser(TypeOfUser.AGENT);
         repository.addAgent(user);
+        AgentEntity agentEntity= new AgentEntity();
+        agentEntity.setName(user.getName());
+        agentEntity.setPassword(user.getPassword());
+        agentEntity.setMaxCountActiveChat(user.getMaxCountActiveChat());
+        repository.getRegisterAgents().add(agentEntity);
         logger.info("INFO: Registered new agent " + user.getName());
         messageUtil.sendAgentRegisterMessage(user);
         newChattingAgent("find client", user);
@@ -167,6 +174,8 @@ public class UserService {
         }
 
     }
+
+
 
 
     public void newChattingAgent(String message, User agent) {
@@ -251,13 +260,24 @@ public class UserService {
     }
 
     public User getClientById(int id) {
-        return getClients().stream().filter(user -> id == user.getId()).findFirst().get();
+
+        List<User> collect = getClients().stream().filter(user -> id == user.getId()).collect(Collectors.toList());
+
+        if (collect.isEmpty())
+            return null;
+        else return collect.stream().filter(user -> id == user.getId()).findAny().get();
+
     }
 
 
     public User getAgentById(int id) {
-        return getAgents().stream().filter(user -> id == user.getId()).findFirst().get();
 
+        List<User> collect = getAgents().stream().filter(user -> id == user.getId()).collect(Collectors.toList());
+
+        if (collect.isEmpty())
+            return null;
+        else
+        return getAgents().stream().filter(user -> id == user.getId()).findFirst().get();
     }
 
 
@@ -277,10 +297,113 @@ public class UserService {
         return Writer.toString();
     }
 
+
+    public String creatGsonListEntity(List<AgentEntity> listOfUsers) {
+        JsonObject jsonObject;
+        JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+
+        for (AgentEntity user : listOfUsers) {
+            objectBuilder.add("agent "+user.getName(),"maxActivChat "+user.getMaxCountActiveChat());
+        }
+        jsonObject = objectBuilder.build();
+
+        StringWriter Writer = new StringWriter();
+        try (JsonWriter jsonWriter = Json.createWriter(Writer)) {
+            jsonWriter.write(jsonObject);
+        }
+        return Writer.toString();
+    }
+
+
     public List<User> getReadyAgents() {
         return getAgents().stream()
                 .filter(agent -> agent.ready())
                 .collect(Collectors.toList());
     }
 
+
+    public String decode(String agentPassword)
+    {
+        byte[] decodedBytes = Base64.getDecoder().decode(agentPassword);
+        String decodedString = new String(decodedBytes);
+
+        return decodedString;
+    }
+
+    public void signInAgent(String message, User agent) {
+
+       // String maxCountActiveChat = Json.createReader(new StringReader(message)).readObject().getString("maxCountActiveChat");
+        String typeofAgent = Json.createReader(new StringReader(message)).readObject().getString("TypeofAgent");
+        String name = Json.createReader(new StringReader(message)).readObject().getString("name");
+        List<AgentEntity> collect= new ArrayList<>();
+
+
+        for (AgentEntity agentEntity:repository.getRegisterAgents())
+        {
+            if (agentEntity.getName().equals(name))
+                collect.add(agentEntity);
+        }
+
+        String agentPassword = Json.createReader(new StringReader(message)).readObject().getString("agentPassword");
+        String decodedString=decode(agentPassword);
+        System.out.println(message);
+        if (collect.isEmpty())
+        {
+            try {
+                agent.getUserSession().getBasicRemote().sendText(messageUtil.createJsonTypeOfMessageString("IncorrectName"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+         if (!collect.isEmpty())
+         {
+             AgentEntity agentEntity = collect.stream().filter(a -> a.getName().equals(name)).findFirst().get();
+             if (!agentEntity.getPassword().equals(decodedString))
+             {
+                 try {
+                     agent.getUserSession().getBasicRemote().sendText(messageUtil.createJsonTypeOfMessageString("IncorrectPassword"));
+                 } catch (IOException e) {
+                     e.printStackTrace();
+                 }
+             }
+
+             else
+             {
+                 if (typeofAgent.equals("web"))
+                 {
+                     agent.setConsoleAgent(false);
+                     agent.setName(agentEntity.getName());
+                     agent.setPassword(agentEntity.getPassword());
+                     agent.setMaxCountActiveChat(agentEntity.getMaxCountActiveChat());
+                     agent.setTypeOfUser(TypeOfUser.AGENT);
+                 }
+
+                 else
+                 {
+                     agent.setConsoleAgent(true);
+                     agent.setName(agentEntity.getName());
+                     agent.setPassword(agentEntity.getPassword());
+                     agent.setMaxCountActiveChat(1);
+                     agent.setTypeOfUser(TypeOfUser.AGENT);
+                 }
+
+                 repository.addAgent(agent);
+                 try {
+                     agent.getUserSession().getBasicRemote().sendText(messageUtil.createJsonTypeOfMessageString("CorrectPassword"));
+                 } catch (IOException e) {
+                     e.printStackTrace();
+                 }
+                 newChattingAgent("",agent);
+
+             }
+         }
+
+    }
+
+    public String getAllRegister() {
+        List<AgentEntity> registerAgents = (List<AgentEntity>) repository.getRegisterAgents();
+      return   creatGsonListEntity(registerAgents);
+
+    }
 }

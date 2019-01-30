@@ -13,6 +13,7 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import java.io.StringReader;
+import java.util.Base64;
 
 @ServerEndpoint("/agent")
 public class AgentWebsocket {
@@ -34,13 +35,18 @@ public class AgentWebsocket {
 
 
     @OnMessage
-    public void handleMessage(String message) {
+    public void handleMessage(String message,Session session) {
 
         String TypeofMessage = Json.createReader(new StringReader(message)).readObject().getString("TypeOfMessage");
 
         switch (TypeofMessage) {
             case "/register": {
                 {
+                    String agentPassword = Json.createReader(new StringReader(message)).readObject().getString("agentPassword");
+                    byte[] decodedBytes = Base64.getDecoder().decode(agentPassword);
+                    String decodedString = new String(decodedBytes);
+                    agent.setPassword(decodedString);
+                    System.out.println(decodedString);
                     String mes = Json.createReader(new StringReader(message)).readObject().getString("message");
                     String maxCountActiveChat = Json.createReader(new StringReader(message)).readObject().getString("maxCountActiveChat");
                     String typeofAgent = Json.createReader(new StringReader(message)).readObject().getString("TypeofAgent");
@@ -50,6 +56,13 @@ public class AgentWebsocket {
                     agent.setMaxCountActiveChat(Integer.parseInt(maxCountActiveChat));
                     userService.registrationUser(mes, agent);
                 }
+                break;
+            }
+
+            case "/signIn":
+            {
+
+                userService.signInAgent(message,agent);
                 break;
             }
 

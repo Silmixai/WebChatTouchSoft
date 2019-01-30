@@ -40,14 +40,6 @@ html ul.tabs li.active, html ul.tabs li.active a:hover {
     border-bottom: 1px solid #fff;
 }
 
-.message-input-box {
-    width: 220px;
-    padding: 2px;
-    font: inherit;
-    outline: none;
-    border: black 1px solid;
-    margin-left: 20px;
-}
 
 
 .web-agent-prompt-submit {
@@ -61,8 +53,8 @@ html ul.tabs li.active, html ul.tabs li.active a:hover {
 
 
 .messages-area {
-    width: 500px;
-    height: 200px;
+    width: 800px;
+    height: 400px;
     margin: 20px;
     padding: 5px;
     overflow-x: hidden;
@@ -88,6 +80,46 @@ html ul.tabs li.active, html ul.tabs li.active a:hover {
 }
 
 .tab_content {
+     padding: 20px;
+     font-size: 1.2em;
+ }
+
+.tab_content2 {
     padding: 20px;
     font-size: 1.2em;
+}
+
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
 }

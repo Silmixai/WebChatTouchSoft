@@ -14,7 +14,7 @@ public class ChatRoomClientEndpoint {
     @OnOpen
     public void proccesOpen(Session session) {
         this.session = session;
-        System.out.println("подключился клиент");
+
     }
 
     public ChatRoomClientEndpoint() throws URISyntaxException, IOException, DeploymentException {

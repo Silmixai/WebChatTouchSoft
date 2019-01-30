@@ -1,6 +1,7 @@
 package com.mixail.rest;
 
 import com.mixail.service.ChatService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -14,6 +15,7 @@ public class ChatRest {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Tag(name = "Get current open chats")
     public String getRooms(
     ) {
         return chatService.getOpenChats();

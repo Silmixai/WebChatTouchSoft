@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mixail.model.User;
 import com.mixail.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -28,6 +29,7 @@ public class MessagingRest {
 
     @Path("/client/send")
     @POST
+    @Tag(name = "Send a message to the agent from the client")
     @Consumes("application/x-www-form-urlencoded")
     public void SendRestClientMessage(
             @FormParam("message") String message,
@@ -51,6 +53,7 @@ public class MessagingRest {
 
     @Path("/agent/send")
     @POST
+    @Tag(name = "end a message to the client from the agent")
     @Consumes("application/x-www-form-urlencoded")
     public void SendRestClientMessage(
             @FormParam("message") String message,
@@ -73,9 +76,10 @@ public class MessagingRest {
         }
     }
 
-
     @Path("client/receive")
     @GET
+
+    @Tag(name = "Get new client messages")
     @Produces(MediaType.APPLICATION_JSON)
     public String getClientMessage(
             @Context HttpServletRequest request,
@@ -100,6 +104,7 @@ public class MessagingRest {
 
     @Path("agent/receive")
     @GET
+    @Tag(name = "Get new agent messages")
     @Produces(MediaType.APPLICATION_JSON)
     public String getAgentMessage(
             @Context HttpServletRequest request,
@@ -144,6 +149,9 @@ public class MessagingRest {
         }
         return stringWriter.toString();
     }
+
+
+
 
 
 }

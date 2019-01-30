@@ -31,6 +31,14 @@ public class AgentService {
     public String getAgentById(Integer id) {
 
         User agentById = userService.getAgentById(id);
+
+        if (agentById==null)
+        {
+            JsonObject jsonObject = Json.createObjectBuilder().add("info:", "there is no agent with such id").build();
+            return jsonObject.toString() ;
+
+        }
+
         JsonObject jsonObject = Json.createObjectBuilder().add("id",agentById.getId()).add("name",agentById.getName()).add("maxCountActiveChat",agentById.getMaxCountActiveChat()).add("isConsoleAgent",agentById.isConsoleAgent()).build();
         StringWriter stringWriter = new StringWriter();
         try (JsonWriter jsonWriter = Json.createWriter(stringWriter)) {
@@ -54,4 +62,8 @@ public class AgentService {
                 .collect(Collectors.toList());
     }
 
+    public String getAllRegister() {
+
+        return userService.getAllRegister();
+    }
 }

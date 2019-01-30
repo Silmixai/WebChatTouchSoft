@@ -2,84 +2,50 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Websoket_final</title>
+    <title>ClientPage</title>
+    <script src="jquery-1.10.2.min.js"></script>
+    <link rel="stylesheet" href="css/agent.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
 </head>
 
-<style>
-
-
-    .messages-area {
-        width: 500px;
-        height: 200px;
-        margin: 20px;
-        padding: 5px;
-        overflow-x: hidden;
-        overflow-y: auto;
-        outline: none;
-        background: white;
-        resize: none;
-        font: inherit;
-    }
-
-    .message-input-box {
-        width: 440px;
-        padding: 2px;
-        font: inherit;
-        outline: none;
-        border: black 1px solid;
-        margin-left: 20px;
-    }
-
-    .register_input_name
-    {
-        width: 440px;
-        padding: 2px;
-        font: inherit;
-        outline: none;
-        border: black 1px solid;
-        margin-left: 20px;
-    }
-
-    .tab_container {
-        border: 1px solid #999;
-        border-top: none;
-        clear: both;
-        float: left;
-        width: 100%;
-        background: #fff;
-        -moz-border-radius-bottomright: 5px;
-        -webkit-border-bottom-right-radius: 5px;
-        -moz-border-radius-bottomleft: 5px;
-        -webkit-border-bottom-left-radius: 5px;
-    }
-
-    .tab_content {
-        padding: 20px;
-        font-size: 1.2em;
-    }
-
-</style>
 
 <body>
 
-<div class="tab_container">
-    <div class="tab_content" >
-    <input onclick="CloseConnection();" value="Disconnect" disabled="disabled" id="disconnectButton" type="button">
-    <input onclick="Leave();" id="leaveButton" value="Leave" disabled="disabled" type="button">
+
+
+
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <br>
+        <br>
+    <input onclick="CloseConnection();" value="Disconnect" hidden="hidden" id="disconnectButton" type="button">
+    <input onclick="Leave();" id="leaveButton" value="Leave" hidden="hidden" type="button">
     <br>
     <br>
     <br>
-    <textarea id="messagesTextArea" readonly="readonly" class="messages-area"></textarea>
+
+        <div class="form-group">
+    <textarea id="messagesTextArea" hidden="hidden"  readonly="readonly" class="form-control" rows="20"></textarea>
     <br>
-    <input type="text" id="messageText" class="message-input-box"/>
-    <input id="buttonSendMessage" disabled="disabled" type="button" value="Send" onclick="SendMessage();">
+    <input type="text" hidden="hidden" id="messageText" class="message-input-box" size="50"/>
+    <input id="buttonSendMessage" hidden="hidden"  type="button" value="Send" onclick="SendMessage();">
+    <br>
+        </div>
+
     <br>
     <br>
-    <br>
+                <div class="form-group">
     <label id="labelName">Enter your name </label>
-    <input type="text"  id="userName" class="register_input_name" size="10"/>
+    <input type="text"  id="userName" class="form-control " />
+                    <br>
     <input id="RegisterButton" type="button" value="Register" onclick="register();">
     <br>
+
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -127,12 +93,14 @@
 
     function register() {
 
-        disconnectButton.disabled = false;
-        buttonSendMessage.disabled = false;
-        leaveButton.disabled = false;
+        disconnectButton.hidden = false;
+        buttonSendMessage.hidden = false;
+        leaveButton.hidden = false;
         labelName.hidden = true;
         registerButton.hidden = true;
         userName.hidden = true;
+        messagesTextArea.hidden=false;
+        messageText.hidden=false;
         webSocket.send(JSON.stringify({
             'message': "client" + ' ' + userName.value + ' ',
             'TypeOfMessage': '/register'

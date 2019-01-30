@@ -22,6 +22,9 @@ public class User {
     boolean ConsoleAgent = false;
     private CopyOnWriteArrayList<String> firstMessages = new CopyOnWriteArrayList<>();
 
+
+
+
     public boolean isConsoleAgent() {
         return ConsoleAgent;
     }
