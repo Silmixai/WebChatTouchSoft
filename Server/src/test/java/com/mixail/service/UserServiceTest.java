@@ -28,15 +28,6 @@ class UserServiceTest {
     @BeforeAll
     public static void setUp() {
 
-        User client1 = new User();
-        client1.setName("client1");
-        User client2 = new User();
-        client2.setName("client2");
-
-        User agent1 = new User();
-        client1.setName("agent1");
-        User agent2 = new User();
-        client2.setName("agent2");
 
 
         repository = mock(UserRepositoryImpl.class);
@@ -49,8 +40,6 @@ class UserServiceTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
 
 
         userSession = new Session() {
@@ -238,33 +227,66 @@ class UserServiceTest {
     void getWaitingClients() {
 
 
+        User client = new User();
+        client.setUserSession(userSession);
+        client.setName("client");
+        userService.registrationClient(client, " ");
+
+        List<User> waitingClients = userService.getWaitingClients();
+        assertEquals(waitingClients.size(),4 );
+
     }
 
     @Test
     void getAgents() {
 
+        User agent1 = new User();
+        agent1.setUserSession(userSession);
+        agent1.setName("client");
+
+        User agent2 = new User();
+        agent2.setUserSession(userSession);
+        agent2.setName("client");
+
+        userService.registrationClient(agent1, " ");
+        userService.registrationClient(agent2, " ");
+
+        userService.getAgents();
+        verify(repository).getAgents();
 
     }
 
     @Test
     void getClients() {
 
-    //    User client1 = new User();
-   //     User client2 = new User();
-     //   userService.registrationClient(client1,client1.getName());
-    //    userService.registrationClient(client2,client2.getName());
+        User client1 = new User();
+        client1.setUserSession(userSession);
+        client1.setName("client");
+
+        User client2 = new User();
+        client2.setUserSession(userSession);
+        client2.setName("client");
+
+        userService.registrationClient(client1, " ");
+        userService.registrationClient(client2, " ");
+
+        userService.getClients();
+        verify(repository).getClients();
+
 
     }
 
     @Test
     void exitAgent() {
 
+        User agent1 = new User();
+        agent1.setUserSession(userSession);
+        agent1.setName("client");
+        userService.registrationAgent(agent1,agent1.getName());
+        userService.exitAgent(agent1);
+        verify(repository).removeAgent(agent1);
 
     }
 
-    @Test
-    void getClientById() {
 
-
-    }
 }
