@@ -39,6 +39,9 @@ public class ClientRest {
     }
 
 
+
+
+
     /*
 
     @Path("/exitClient")

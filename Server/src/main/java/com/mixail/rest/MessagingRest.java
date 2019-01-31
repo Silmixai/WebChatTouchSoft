@@ -76,6 +76,32 @@ public class MessagingRest {
         }
     }
 
+
+    @Path("/agent/exit")
+    @POST
+    @Tag(name = "Exit agent")
+    @Consumes("application/x-www-form-urlencoded")
+    public String exsitAgent(@FormParam("id") String id)
+    {
+
+        User agentById = userService.getAgentById(Integer.parseInt(id));
+
+        if (agentById==null)
+        {
+            JsonObject jsonObject = Json.createObjectBuilder().add("info:", "there is no agent with such id").build();
+            return jsonObject.toString();
+
+        }
+        else
+        {
+            userService.exitAgent(agentById);
+            JsonObject jsonObject = Json.createObjectBuilder().add("info:", "agent id="+id+" exit").build();
+            return jsonObject.toString();
+        }
+
+    }
+
+
     @Path("client/receive")
     @GET
 

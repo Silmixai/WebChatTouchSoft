@@ -172,7 +172,6 @@ public class UserService {
                 client.getFirstMessages().add(message);
             }
         }
-
     }
 
 
@@ -254,6 +253,11 @@ public class UserService {
             client.setStatus(Status.Waiting);
             client.setUserForChat(null);
             clientsQueue.add(client);
+            try {
+                agent.getUserSession().getBasicRemote().sendText(messageUtil.createJsonTypeOfMessageString("exit"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         agent.getInterlocutors().clear();
         repository.removeAgent(agent);

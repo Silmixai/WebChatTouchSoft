@@ -218,6 +218,8 @@
         var id = jsonData.id;
         var clientName = jsonData.clientName;
 
+
+
         if (jsonData.TypeOfMessage == "Register") {
 
             addMessage('Info:' + 'Agent ' + jsonData.agentName + ' is registered');
@@ -251,6 +253,14 @@
             checkRegister.textContent = 'Wrong password, try again!';
             checkRegister.style.color = 'red';
 
+        }
+
+        if (jsonData.TypeOfMessage == "exit") {
+            document.getElementById("ExitButton").hidden = true;
+            var tabs = document.getElementById("tabs");
+            tabs.hidden = true;
+            $(".tab_content").hide();
+            addMessage("agent exit from the chat,all tabs was closed");
         }
 
 

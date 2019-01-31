@@ -21,4 +21,5 @@ public class ChatRest {
         return chatService.getOpenChats();
     }
 
+
 }
