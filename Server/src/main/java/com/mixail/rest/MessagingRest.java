@@ -53,7 +53,7 @@ public class MessagingRest {
 
     @Path("/agent/send")
     @POST
-    @Tag(name = "end a message to the client from the agent")
+    @Tag(name = "Send a message to the client from the agent")
     @Consumes("application/x-www-form-urlencoded")
     public void SendRestClientMessage(
             @FormParam("message") String message,
@@ -138,11 +138,11 @@ public class MessagingRest {
     }
 
 
-    private String createAgentJsonMessage(String message, String typeOfMessage, int id) {
+    private String createAgentJsonMessage(String message, String typeOfMessage, Integer id) {
         User clientById = userService.getClientById(id);
         String clientName = clientById.getName();
 
-        JsonObject jsonObject = Json.createObjectBuilder().add("id", id).add("clientName",clientName).add("message",message).add("TypeOfMessage", typeOfMessage).build();
+        JsonObject jsonObject = Json.createObjectBuilder().add("id",id.toString()).add("clientName",clientName).add("message",message).add("TypeOfMessage", typeOfMessage).build();
         StringWriter stringWriter = new StringWriter();
         try (JsonWriter jsonWriter = Json.createWriter(stringWriter)) {
             jsonWriter.write(jsonObject);

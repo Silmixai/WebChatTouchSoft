@@ -346,7 +346,7 @@ public class UserService {
 
         String agentPassword = Json.createReader(new StringReader(message)).readObject().getString("agentPassword");
         String decodedString=decode(agentPassword);
-        System.out.println(message);
+
         if (collect.isEmpty())
         {
             try {

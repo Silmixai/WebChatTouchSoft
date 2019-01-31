@@ -46,7 +46,6 @@ public class AgentWebsocket {
                     byte[] decodedBytes = Base64.getDecoder().decode(agentPassword);
                     String decodedString = new String(decodedBytes);
                     agent.setPassword(decodedString);
-                    System.out.println(decodedString);
                     String mes = Json.createReader(new StringReader(message)).readObject().getString("message");
                     String maxCountActiveChat = Json.createReader(new StringReader(message)).readObject().getString("maxCountActiveChat");
                     String typeofAgent = Json.createReader(new StringReader(message)).readObject().getString("TypeofAgent");
