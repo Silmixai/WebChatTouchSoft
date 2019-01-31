@@ -1,10 +1,13 @@
 package com.mixail.service;
 
+import com.mixail.model.TypeOfUser;
 import com.mixail.model.User;
 import com.mixail.repository.UserRepositoryImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import javax.json.Json;
+import javax.json.JsonObject;
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
@@ -27,8 +30,6 @@ class UserServiceTest {
 
     @BeforeAll
     public static void setUp() {
-
-
 
         repository = mock(UserRepositoryImpl.class);
         userSession = mock(Session.class);
@@ -192,6 +193,27 @@ class UserServiceTest {
 
     }
 
+
+    @Test
+    void closeTabAgent()
+    {
+
+        User client6 = new User();
+        client6.setUserSession(userSession);
+        client6 .setName("client");
+
+        User agent6 = new User();
+        agent6.setUserSession(userSession);
+        agent6.setName("agent");
+
+        agent6.addClientToRoom(client6.getId(),client6);
+        assertEquals(agent6.getInterlocutorsCount().intValue(),1);
+        JsonObject message = Json.createObjectBuilder().add("message", "message").add("id",client6.getId().toString()).add("clientName",client6.getName()).build();
+        userService.closeTabAgent(message.toString(),agent6);
+        assertEquals(agent6.getInterlocutorsCount().intValue(),0);
+    }
+
+
     @Test
     void splitMessages() {
         String message = "agent Mike";
@@ -233,7 +255,7 @@ class UserServiceTest {
         userService.registrationClient(client, " ");
 
         List<User> waitingClients = userService.getWaitingClients();
-        assertEquals(waitingClients.size(),4 );
+        assertEquals(waitingClients.size(),6 );
 
     }
 
@@ -288,5 +310,67 @@ class UserServiceTest {
 
     }
 
+    @Test
+    void clientExit()
+    {
+        User client5 = new User();
+        client5 .setUserSession(userSession);
+        client5 .setName("client");
+        userService.registrationAgent(client5 ,client5.getName());
+        userService.exitAgent(client5);
+        verify(repository).removeAgent(client5);
+
+    }
+
+
+    @Test
+    void registrationUser()
+    {
+        User client7 = new User();
+        client7 .setUserSession(userSession);
+        client7 .setName("client");
+        client7.setTypeOfUser(TypeOfUser.CLIENT);
+
+        userService.registrationUser("client "+client7.getName(),client7);
+
+        verify(repository).addClient(client7);
+
+
+        User agent8 = new User();
+        agent8 .setUserSession(userSession);
+        agent8 .setName("agent8");
+        agent8.setTypeOfUser(TypeOfUser.AGENT);
+
+        userService.registrationUser("agent "+agent8.getName(),agent8);
+
+        verify(repository).addAgent(agent8);
+
+    }
+
+
+
+    @Test
+    void registrationAgent()
+    {
+        User client9 = new User();
+        client9 .setUserSession(userSession);
+        client9 .setName("client");
+        client9.setTypeOfUser(TypeOfUser.CLIENT);
+
+        userService.registrationUser("client "+client9.getName(),client9);
+        verify(repository).addClient(client9);
+    }
+
+
+    @Test
+    void registrationClient()
+    {
+        User agent9 = new User();
+        agent9 .setUserSession(userSession);
+        agent9 .setName("agent9");
+        agent9.setTypeOfUser(TypeOfUser.AGENT);
+        userService.registrationAgent(agent9,agent9.getName());
+        verify(repository).addAgent(agent9);
+    }
 
 }
